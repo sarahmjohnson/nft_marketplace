@@ -51,6 +51,7 @@ contract NFTMarketplace {
 
     function checkApproval(ERC721 _NFT) public returns (address) {
         // Check approval for use with this contract
+        // This doesn't work yet
         owner = _NFT.ownerOf(tokenId);
         return owner;
     }
