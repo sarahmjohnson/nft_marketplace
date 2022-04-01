@@ -1,22 +1,56 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+/* List NFTs with a sale price and expiration time.
+- assume that its already minted
+
+- list NFT on our marketplace
+- needs to be approved to use for our contract
+
+Users can buy NFTs using a newly deployed project ERC20 token -- check with gerald
+- make offer
+- buy
+
+Royalties should be configurable for NFT sellers. e.g. take 10% of each sale, increase to 20%
+
+Unit tests written for the contracts
+Deployment script written and contracts deployed to a testnet.
+Write an interface and then tweak the contract to consume the interface. 
+
+nft_marketplace = [
+    [0, "sarahsnft", $50, 2648850587, 10%], 
+    [1, "davidsnft", $30, 1340958344, 20%],
+    [2, "geraldsnft", $10, 9438509449, 15%]
+]
+
+1. approval
+2. list nft on marketplace (set price and expiration time)
+3. get function to return marketplace
+*/
 
 contract NFTMarketplace {
-    string private greeting;
 
-    constructor(string memory _greeting) {
-        console.log("Deploying a Greeter with greeting:", _greeting);
-        greeting = _greeting;
+    ERC721 public NFT;
+    uint256 public salePrice;
+    uint256 public expirationTime;
+
+    struct NFTs {
+        ERC721 NFT;
+        uint256 salePrice;
+        uint256 expirationTime;
     }
 
-    function greet() public view returns (string memory) {
-        return greeting;
+    NFTs[] public nfts;
+
+    function addNFT(ERC721 _NFT, uint256 _salePrice, uint256 _expirationTime) public {
+        // Check approval for use with this contract
+        nfts.push(NFTs(_NFT, _salePrice, _expirationTime));
     }
 
-    function setGreeting(string memory _greeting) public {
-        console.log("Changing greeting from '%s' to '%s'", greeting, _greeting);
-        greeting = _greeting;
+    function getNFTMarketplace() public view returns (NFTs[] memory) {
+        return nfts;
     }
 }
