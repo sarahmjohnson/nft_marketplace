@@ -67,9 +67,13 @@ contract NFTMarketplace {
     }
 
     function makeOffer() public {}
+    // Users can buy NFTs using a newly deployed project ERC20 token
 
     function buyNFT() public {}
+    // Users can buy NFTs using a newly deployed project ERC20 token
 
     function configureRoyalty() public {}
+    // Royalties should be configurable for NFT sellers. e.g. take 10% of each sale, increase to 20%
+    // - only if you are the original creator
 
 }
