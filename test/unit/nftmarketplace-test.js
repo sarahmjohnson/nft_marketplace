@@ -7,7 +7,7 @@ describe("NFTMarketplace", function () {
     const nftmarketplace = await NFTMarketplace.deploy();
     await nftmarketplace.deployed();
 
-    expect(await nftmarketplace.getListing(0)).to.equal("Hello, world!");
+    expect(await nftmarketplace.getLengthMarketplace()).to.equal(5);
 
   });
 });

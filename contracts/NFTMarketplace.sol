@@ -89,6 +89,8 @@ contract NFTMarketplace {
         bool isSold = false;
         address payable owner = payable(msg.sender);
 
+        // question: should i set the start and expiration or should the lister?
+
         // List NFT on marketplace
         marketplace.push(Listing(newListingId, _tokenId, _contractAddress, owner, _salePrice, _startTime, _expirationTime, royalty, isSold));
     
@@ -102,7 +104,7 @@ contract NFTMarketplace {
     }
 
     // Return the length of the NFT marketplace - allows frontend to enumerate listings
-    function getLengthMarketplace() public view returns (uint256 length) {
+    function getLengthMarketplace() public virtual view returns (uint256 length) {
         return marketplace.length;
     }
 
