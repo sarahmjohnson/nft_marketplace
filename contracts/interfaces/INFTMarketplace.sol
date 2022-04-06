@@ -7,12 +7,12 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 interface INFTMarketplace {
   
   function addListing(
-        uint256 _tokenId,
-        address _contractAddress,
-        uint256 _salePrice,
-        uint256 _startTime,
-        uint256 _expirationTime
-    ) external;
+    uint256 _tokenId,
+    address _contractAddress,
+    uint256 _salePrice,
+    uint256 _startTime,
+    uint256 _expirationTime
+  ) external;
   
   function getLengthMarketplace() external;
 
@@ -20,7 +20,5 @@ interface INFTMarketplace {
   
   function makeOffer(uint256 _listingId) external;
 
-  function buyNFT() external;
-  
   function configureRoyalty() external;
 }
