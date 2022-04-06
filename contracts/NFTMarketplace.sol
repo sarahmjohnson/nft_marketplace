@@ -4,66 +4,65 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-/* List NFTs with a sale price and expiration time.
-- assume that its already minted
-
-- list NFT on our marketplace
-- needs to be approved to use for our contract
-
-Users can buy NFTs using a newly deployed project ERC20 token -- check with gerald
-- make offer
-- buy
-
-Royalties should be configurable for NFT sellers. e.g. take 10% of each sale, increase to 20%
-- only if you are the original creator
-
-Unit tests written for the contracts
-Deployment script written and contracts deployed to a testnet.
-Write an interface and then tweak the contract to consume the interface. 
-
-nft_marketplace = [
-    [0, "sarahsnft", $50, 2648850587, 10%], 
-    [1, "davidsnft", $30, 1340958344, 20%],
-    [2, "geraldsnft", $10, 9438509449, 15%]
-]
-
-1. approval
-2. list nft on marketplace (set price and expiration time)
-3. get function to return marketplace
-*/
-
 contract NFTMarketplace {
+    using Counters for Counters.Counter;
 
-    ERC721 public NFT;
-    uint256 public salePrice;
-    uint256 public expirationTime;
-    uint256 public tokenId;
+    Counters.Counter private _listingIds;
+
     address public owner;
+    uint256 public royalty;
 
-
-    struct NFTs {
-        ERC721 NFT;
+    struct Listing {
+        uint256 listingId; // ID for this listing in the marketplace
+        uint256 tokenId; // NFT token ID
+        address contractAddress; // NFT address
         uint256 salePrice;
+        uint256 startTime;
         uint256 expirationTime;
+        uint256 royalty;
     }
 
-    NFTs[] private nfts;
+    Listing[] private listing;
 
-    function checkApproval(ERC721 _NFT) public returns (address) {
+    // function checkApproval(ERC721 _NFT) public returns (address) {
         // Check approval for use with this contract
         // This doesn't work yet
-        owner = _NFT.ownerOf(tokenId);
-        return owner;
+        // NFTAddress = _NFT.address()
+    //     owner = _NFT.ownerOf(tokenId);
+    //     return owner;
+    // }
+
+    function getRoyalty(address _contractAddress) public returns (uint256 royalty) {
+        // royaltyInfo(_tokenId, _salePrice)
+        return royalty;
     }
 
-    function addNFT(ERC721 _NFT, uint256 _salePrice, uint256 _expirationTime) public {
+    function addListing(
+        uint256 _tokenId,
+        address _contractAddress,
+        uint256 _salePrice,
+        uint256 _startTime,
+        uint256 _expirationTime
+    ) public {
+        // First, check approval
+
+        _listingIds.increment();
+        uint256 newListingId = _listingIds.current();
+
+        royalty = getRoyalty(_contractAddress);
 
         // List NFT on marketplace
-        nfts.push(NFTs(_NFT, _salePrice, _expirationTime));
+        listing.push(Listing(newListingId, _tokenId, _contractAddress, _salePrice, _startTime, _expirationTime, royalty));
     }
 
-    function getNFTMarketplace() public view returns (NFTs[] memory) {
-        return nfts;
+    // Return an NFT Listing at a given index
+    function getListing(uint256 index) public view returns (Listing memory) {
+        return listing[index];
+    }
+
+    // Return the length of the NFT marketplace - allows frontend to enumerate listings
+    function getLengthMarketplace() public view returns (uint256 length) {
+        return listing.length;
     }
 
     function makeOffer() public {}
