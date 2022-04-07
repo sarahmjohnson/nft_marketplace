@@ -1,100 +1,69 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
-import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./NFT.sol";
 
-// question: should we remove from marketplace after sold, or keep?
-
-// question: should any owner of an NFT be able to change the royalty or just the orginal owner (creator)
-
+// TODO: change start and expiration times to timestamps
 
 contract NFTMarketplace {
     using Counters for Counters.Counter;
 
     Counters.Counter private _listingIds;
-
-    ERC721 private NFT;
-    ERC2981 private NFTRoyalty1; // fixme
-    ERC721Royalty private NFTRoyalty;
-    address private ownerAddress;
-    uint256 private royaltyInTokens;
+    NFT public nft;
 
     struct Listing {
         uint256 listingId; // ID for this listing in the marketplace
-        uint256 tokenId; // NFT token ID
-        address contractAddress; // NFT address
-        address payable owner; // Address who listed this NFT in the marketplace
+        uint256 itemId; // ID for this NFT - created in NFT.sol
         uint256 salePrice;
         uint256 startTime;
         uint256 expirationTime;
-        uint256 royalty; // question: should we include this in the listing?
         bool isSold;
     }
 
     Listing[] private marketplace;
 
-    event itemListed(uint256 listingId, uint256 tokenId, uint256 salePrice);
+    event itemListed(uint256 listingId, uint256 itemId, uint256 salePrice, uint256 startTime, uint256 expirationTime, bool isSold);
     event itemSold(uint256 listingId, address buyer, uint256 salePrice);
 
-    modifier hasTransferApproval(uint256 tokenId){
-        require(NFT.getApproved(tokenId) == address(this), "Not approved for transfer. Cannot list on marketplace.");
+    modifier hasTransferApproval(uint256 itemId){
+        require(nft.getApproved(nft.getTokenId(itemId)) == address(this), "Not approved for transfer. Cannot list on marketplace.");
         _;
     }
 
-    modifier isItemOwner(uint256 tokenId){
-        require(NFT.ownerOf(tokenId) == msg.sender, "Sender does not own the item. Cannot list on marketplace.");
+    modifier isItemOwner(uint256 itemId){
+        require(nft.ownerOf(nft.getTokenId(itemId)) == msg.sender, "Sender does not own the item. Cannot list on marketplace.");
         _;
     }
 
-    modifier itemExists(uint256 id){
-        require(id < marketplace.length && marketplace[id].listingId == id, "Could not find listing.");
+    modifier itemExists(uint256 listingId){
+        require(listingId < marketplace.length && marketplace[listingId].listingId == listingId, "Could not find listing.");
         _;
     }
 
-    modifier isForSale(uint256 id){
-        require(!marketplace[id].isSold, "NFT is already sold.");
+    modifier isForSale(uint256 listingId){
+        require(!marketplace[listingId].isSold, "NFT is already sold.");
         _;
-    }
-
-    function getRoyalty(
-        uint256 _tokenId, 
-        uint256 _salePrice
-    ) public returns (uint256 royalty) {
-        
-        (ownerAddress, royaltyInTokens) = NFTRoyalty.royaltyInfo(_tokenId, _salePrice);
-
-        // Royalty is returned in tokens, so we convert to percentage
-        uint256 royaltyAsPercentage = royaltyInTokens / _salePrice * 100;
-
-        return royaltyAsPercentage;
     }
 
     // Add a listing to the marketplace
     function addListing(
-        uint256 _tokenId,
-        address _contractAddress,
+        uint256 _itemId,
         uint256 _salePrice,
         uint256 _startTime,
         uint256 _expirationTime
-    ) hasTransferApproval(_tokenId) isItemOwner(_tokenId) public {
+    ) hasTransferApproval(_itemId) isItemOwner(_itemId) public {
         // Check item has transfer approval and that sender is the owner of the token
 
         _listingIds.increment();
         uint256 newListingId = _listingIds.current();
 
-        uint256 royalty = getRoyalty(_tokenId, _salePrice);
         bool isSold = false;
-        address payable owner = payable(msg.sender);
-
-        // question: should i set the start and expiration or should the lister?
 
         // List NFT on marketplace
-        marketplace.push(Listing(newListingId, _tokenId, _contractAddress, owner, _salePrice, _startTime, _expirationTime, royalty, isSold));
+        marketplace.push(Listing(newListingId, _itemId, _salePrice, _startTime, _expirationTime, isSold));
     
-        emit itemListed(newListingId, _tokenId, _salePrice);
+        emit itemListed(newListingId, _itemId, _salePrice, _startTime, _expirationTime, isSold);
 
     }
 
@@ -115,25 +84,18 @@ contract NFTMarketplace {
         // Check if funds match the listing price
         require(msg.value >= marketplace[listingId].salePrice, "Offer rejected. Not enough funds sent.");
 
+        uint256 itemId = marketplace[listingId].itemId;
+        address payable owner = nft.getOwner(itemId);
+        uint256 tokenId = nft.getTokenId(itemId);
+
+        // Transfer token
+        nft.safeTransferFrom(owner, msg.sender, tokenId);
+
         // Set to sold
         marketplace[listingId].isSold = true;
 
-        // Transfer token
-        NFT.safeTransferFrom(marketplace[listingId].owner, msg.sender, marketplace[listingId].tokenId);
-
-        marketplace[listingId].owner.transfer(msg.value);
+        owner.transfer(msg.value);
         emit itemSold(listingId, msg.sender, marketplace[listingId].salePrice);
-    }
-
-    // Change royalty
-    function configureRoyalty(uint256 _listingId, uint256 _updatedRoyalty) public {
-        // Check to make sure only creator can configure royalty
-
-        uint256 tokenId = marketplace[_listingId].tokenId;
-
-        // Denominator defaults to 10000, so multipy _updatedRoyalty by 100 to get correct percentage
-        // This doesn't work yet. Having trouble because calling an internal function.
-        // _setTokenRoyalty(tokenId, msg.sender, _updatedRoyalty * 100);
     }
 
 }
