@@ -67,14 +67,14 @@ contract NFTMarketplace {
 
     }
 
-    // Return an NFT Listing at a given index
-    function getListing(uint256 index) public view returns (Listing memory) {
-        return marketplace[index];
-    }
-
     // Return the length of the NFT marketplace - allows frontend to enumerate listings
     function getLengthMarketplace() public virtual view returns (uint256 length) {
         return marketplace.length;
+    }
+
+    // Return an NFT Listing at a given index
+    function getListing(uint256 index) public view returns (Listing memory) {
+        return marketplace[index];
     }
 
     // Make an offer on a listing. Transfers ownership if approved for sale.
