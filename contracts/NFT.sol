@@ -24,16 +24,16 @@ contract NFT is ERC721{
 
     Item[] private items;
 
-    constructor () ERC721("NFT", "UnionNFT") {}
+    constructor () ERC721("UnionNFT", "UNFT") {}
 
     event itemCreated(uint256 itemId, uint256 tokenId, address contractAddress, address creator, address owner, uint256 royalty);
 
-    // Mint an NFT and add to items
+    // Mint an NFT and add to items. Returns itemId
     function mint(
         uint256 _tokenId,
         address _contractAddress,
         uint256 _royalty
-    ) public {
+    ) external returns (uint256) {
 
         _itemIds.increment();
         uint256 newItemId = _itemIds.current();
@@ -49,14 +49,21 @@ contract NFT is ERC721{
         items.push(Item(newItemId, _tokenId, _contractAddress, creator, owner, _royalty));
     
         emit itemCreated(newItemId, _tokenId, _contractAddress, creator, owner, _royalty);
+
+        return newItemId;
     }
 
-    function getTokenId(uint256 itemId) public returns (uint256) {
+    // question: is this the best way to access variables from NFTMarketplace?
+    function getTokenId(uint256 itemId) public view returns (uint256) {
         return items[itemId].tokenId;
     }
 
-    function getOwner(uint256 itemId) public returns (address payable) {
+    function getOwner(uint256 itemId) public view returns (address payable) {
         return items[itemId].owner;
+    }
+
+    function getLengthItems() public view returns (uint256) {
+        return items.length;
     }
 
 }
