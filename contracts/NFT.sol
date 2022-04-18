@@ -33,7 +33,7 @@ contract NFT is ERC721{
         uint256 _tokenId,
         address _contractAddress,
         uint256 _royalty
-    ) external returns (uint256) {
+    ) external virtual returns (uint256) {
 
         _itemIds.increment();
         uint256 newItemId = _itemIds.current();
