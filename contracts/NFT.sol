@@ -54,7 +54,7 @@ contract NFT is ERC721{
     }
 
     // question: is this the best way to access variables from NFTMarketplace?
-    function getTokenId(uint256 itemId) public view returns (uint256) {
+    function getTokenId(uint256 itemId) external view returns (uint256) {
         return items[itemId].tokenId;
     }
 

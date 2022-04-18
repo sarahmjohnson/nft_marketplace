@@ -9,40 +9,42 @@ const SALEPRICE = 20;
 const STARTTIME = 1649362949
 const EXPIRATIONTIME = 1680898949
 
+
 describe("NFTMarketplace", function () {
     
     let hardhatNFT;
     let hardhatNFTMarketplace;
     let assert = chai.assert;
+    let itemId;
 
-    beforeEach(async function () {
+    async function deployContracts () {
 
-        items = await ethers.getSigners();
-        const HardhatNFTMarketplace = await ethers.getContractFactory("NFTMarketplace");
-        hardhatNFTMarketplace = await HardhatNFTMarketplace.deploy();
-        await hardhatNFTMarketplace.deployed();
-
-        items = await ethers.getSigners();
         const HardhatNFT = await ethers.getContractFactory("NFT");
         hardhatNFT = await HardhatNFT.deploy();
         await hardhatNFT.deployed();
 
-    });
+        const HardhatNFTMarketplace = await ethers.getContractFactory("NFTMarketplace");
+        hardhatNFTMarketplace = await HardhatNFTMarketplace.deploy(hardhatNFT.address);
+        await hardhatNFTMarketplace.deployed();
+
+        await ethers.getSigners();
+
+        const resp = await hardhatNFT.mint(
+            TOKENID,
+            CONTRACTADDRESS,
+            ROYALTY
+        )
+
+        itemId = resp.value;
+    }
+
+    beforeEach(deployContracts)
+
 
     describe("addListing", function () {
 
         it("Should add a listing to the marketplace", async function () {
         
-            // TODO: need to mock this so i can override the transfer approval 
-            // set transfer approval on the NFT in the override
-            const resp = await hardhatNFT.mint(
-                TOKENID,
-                CONTRACTADDRESS,
-                ROYALTY
-            )
-
-            const itemId = resp.value;
-
             await hardhatNFTMarketplace.addListing(
                 itemId,
                 SALEPRICE,
@@ -56,41 +58,29 @@ describe("NFTMarketplace", function () {
             // verify the itemId of the item just added
             const listing0 = await hardhatNFTMarketplace.getListing(0);
             assert(listing0[1], 0);
-            console.log(listing0)
 
         });
 
-        it("Should add a listing to the marketplace", async function () {
+        it("Should make an offer on a marketplace item", async function () {
+
+            // TODO: figure out how to unit test with funds being sent
+
+            // await hardhatNFTMarketplace.addListing(
+            //     itemId,
+            //     SALEPRICE,
+            //     STARTTIME,
+            //     EXPIRATIONTIME
+            // );
+            
+            // // get the listingId
+            // const listing0 = await hardhatNFTMarketplace.getListing(0);
+            // const listingId = listing0[0]
         
-            // TODO: need to mock this so i can override the transfer approval 
-            // set transfer approval on the NFT in the override
-            const resp = await hardhatNFT.mint(
-                TOKENID,
-                CONTRACTADDRESS,
-                ROYALTY
-            )
-
-            const itemId = resp.value;
-
-            await hardhatNFTMarketplace.addListing(
-                itemId,
-                SALEPRICE,
-                STARTTIME,
-                EXPIRATIONTIME
-            );
-
-            await hardhatNFTMarketplace.makeOffer(0);
-
-            // verify isSold is false
-            const listing0 = await hardhatNFTMarketplace.getListing(0);
-            console.log(listing0)
-
-            // assert(listing0[5], true);
-            
+            // await hardhatNFTMarketplace.makeOffer(
+            //     listingId
+            // );
 
         });
 
-        // TODO: test the rest of functions
-            
     });
 });

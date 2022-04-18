@@ -27,8 +27,13 @@ contract NFTMarketplace {
     event itemListed(uint256 listingId, uint256 itemId, uint256 salePrice, uint256 startTime, uint256 expirationTime, bool isSold);
     event itemSold(uint256 listingId, address buyer, uint256 salePrice);
 
+    constructor(NFT _nft) {
+        nft = _nft;
+    }
+
     modifier hasTransferApproval(uint256 itemId){
-        require(nft.getApproved(nft.getTokenId(itemId)) == address(this), "Not approved for transfer. Cannot list on marketplace.");
+        uint256 tokenId = nft.getTokenId(itemId);
+        require(nft.getApproved(tokenId) == address(this), "Not approved for transfer. Cannot list on marketplace.");
         _;
     }
 
@@ -56,11 +61,10 @@ contract NFTMarketplace {
         uint256 _expirationTime
     ) external virtual {
     // ) hasTransferApproval(_itemId) isItemOwner(_itemId) external virtual {
-        // TODO: add this back in when i figure out how to mock the unit tests
+        // TODO: add this back in when i figure out how to test openzepplin functions on nonexistant tokens
 
         // Check item has transfer approval and that sender is the owner of the token
 
-        _listingIds.increment();
         uint256 newListingId = _listingIds.current();
 
         bool isSold = false;
@@ -69,6 +73,8 @@ contract NFTMarketplace {
         marketplace.push(Listing(newListingId, _itemId, _salePrice, _startTime, _expirationTime, isSold));
     
         emit itemListed(newListingId, _itemId, _salePrice, _startTime, _expirationTime, isSold);
+
+        _listingIds.increment();
 
     }
 

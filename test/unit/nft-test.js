@@ -29,12 +29,11 @@ describe("NFT", function () {
             )
 
             const itemId = resp.value;
-
-            expect(await hardhatNFT.getTokenId(itemId)).to.equal(TOKENID);
             
-            // TODO: test owner is correct
-            // TODO: test if this function emits the correct data
+            // validate tokenId is correct
+            expect(await hardhatNFT.getTokenId(itemId)).to.equal(TOKENID);
 
+            // validate one item was minted and added to Items
             expect(await hardhatNFT.getLengthItems()).to.equal(1);
 
         });
