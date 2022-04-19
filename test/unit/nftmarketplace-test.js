@@ -1,3 +1,4 @@
+const { messagePrefix } = require("@ethersproject/hash");
 const chai = require("chai");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
@@ -16,6 +17,7 @@ describe("NFTMarketplace", function () {
     let hardhatNFTMarketplace;
     let assert = chai.assert;
     let itemId;
+    let address1;
 
     async function deployContracts () {
 
@@ -27,7 +29,7 @@ describe("NFTMarketplace", function () {
         hardhatNFTMarketplace = await HardhatNFTMarketplace.deploy(hardhatNFT.address);
         await hardhatNFTMarketplace.deployed();
 
-        await ethers.getSigners();
+        [address1] = await ethers.getSigners();
 
         const resp = await hardhatNFT.mint(
             TOKENID,
@@ -62,23 +64,22 @@ describe("NFTMarketplace", function () {
         });
 
         it("Should make an offer on a marketplace item", async function () {
+                    
+            await hardhatNFTMarketplace.addListing(
+                itemId,
+                SALEPRICE,
+                STARTTIME,
+                EXPIRATIONTIME
+            );
 
-            // TODO: figure out how to unit test with funds being sent
+            // get the listingId
+            const listing0 = await hardhatNFTMarketplace.getListing(0);
+            const listingId = listing0[0]
 
-            // await hardhatNFTMarketplace.addListing(
-            //     itemId,
-            //     SALEPRICE,
-            //     STARTTIME,
-            //     EXPIRATIONTIME
-            // );
-            
-            // // get the listingId
-            // const listing0 = await hardhatNFTMarketplace.getListing(0);
-            // const listingId = listing0[0]
-        
-            // await hardhatNFTMarketplace.makeOffer(
-            //     listingId
-            // );
+            await hardhatNFTMarketplace.makeOffer(
+                listingId,
+                {value: ethers.utils.parseEther("1")}
+            );
 
         });
 

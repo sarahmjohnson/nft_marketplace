@@ -85,12 +85,12 @@ contract NFTMarketplace {
     }
 
     // Make an offer on a listing. Transfers ownership if approved for sale.
-    function makeOffer(uint256 listingId) itemExists(listingId) isForSale(listingId) payable external {
+    function makeOffer(uint256 listingId) itemExists(listingId) isForSale(listingId) external payable {
         // Check item exists and is for sale
 
         // Check if funds match the listing price
         require(msg.value >= marketplace[listingId].salePrice, "Offer rejected. Not enough funds sent.");
-        
+
         uint256 itemId = marketplace[listingId].itemId;
         address payable owner = nft.getOwner(itemId);
         uint256 tokenId = nft.getTokenId(itemId);
