@@ -5,8 +5,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./NFT.sol";
 import "hardhat/console.sol";
 
-// TODO: change start and expiration times to timestamps
-
 contract NFTMarketplace {
     using Counters for Counters.Counter;
 
@@ -53,7 +51,6 @@ contract NFTMarketplace {
     }
 
     // Add a listing to the marketplace
-    // TODO: think about how to stop duplicate entries to the marketplace
     function addListing(
         uint256 _itemId,
         uint256 _salePrice,
@@ -61,9 +58,8 @@ contract NFTMarketplace {
         uint256 _expirationTime
     ) external virtual {
     // ) hasTransferApproval(_itemId) isItemOwner(_itemId) external virtual {
-        // TODO: add this back in when i figure out how to test openzepplin functions on nonexistant tokens
-
         // Check item has transfer approval and that sender is the owner of the token
+        // TODO: add this back in when i figure out how to test openzepplin functions on nonexistant tokens
 
         uint256 newListingId = _listingIds.current();
 

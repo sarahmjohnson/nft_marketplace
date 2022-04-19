@@ -1,6 +1,3 @@
-// define NFT logic including set royalty
-// mint
-
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
@@ -8,10 +5,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract NFT is ERC721{
-    using Counters for Counters.Counter;
 
+    using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
-    address public marketplace;
+    mapping(uint256=>bool) MintedNFTs;
 
     struct Item {
         uint256 itemId; // ID for this item
@@ -35,19 +32,24 @@ contract NFT is ERC721{
         uint256 _royalty
     ) external virtual returns (uint256) {
 
+        require(!MintedNFTs[_tokenId],"This NFT is already minted and listed in the marketplace");
+
         _itemIds.increment();
         uint256 newItemId = _itemIds.current();
 
         _safeMint(msg.sender, newItemId);
-        // approve(marketplace, newItemId);
-        // question: how do i set the approval to our marketplace
+        // TODO: how do i get the deployed contract address here?
+        // approve(token.address, newItemId);
 
         address creator = msg.sender;
         address payable owner = payable(msg.sender);
 
         // Add NFT to items
         items.push(Item(newItemId, _tokenId, _contractAddress, creator, owner, _royalty));
-    
+        
+        // Add tokenId to previously MintedNFTs
+        MintedNFTs[_tokenId] = true;
+        
         emit itemCreated(newItemId, _tokenId, _contractAddress, creator, owner, _royalty);
 
         return newItemId;
