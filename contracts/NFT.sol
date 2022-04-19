@@ -32,7 +32,7 @@ contract NFT is ERC721{
         uint256 _royalty
     ) external virtual returns (uint256) {
 
-        require(!MintedNFTs[_tokenId],"This NFT is already minted and listed in the marketplace");
+        require(!MintedNFTs[_tokenId],"This NFT is already minted and listed in the marketplace.");
 
         _itemIds.increment();
         uint256 newItemId = _itemIds.current();

@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import "../NFTMarketplace.sol";
 import "../NFT.sol";
 
-
 contract NFTMarketplaceMock {
     // using Counters for Counters.Counter;
 
@@ -14,7 +13,6 @@ contract NFTMarketplaceMock {
     // constructor(NFT _nft) {
     //     nft = _nft;
     // }
-
 
     // // Add a listing to the marketplace
     // function addListing(

@@ -36,10 +36,10 @@ describe("NFTMarketplace", function () {
         )
 
         itemId = resp.value;
+
     }
 
     beforeEach(deployContracts)
-
 
     describe("addListing", function () {
 
@@ -52,10 +52,10 @@ describe("NFTMarketplace", function () {
                 EXPIRATIONTIME
             );
             
-            // verify there is only one item in the marketplace
+            // Verify there is only one item in the marketplace
             expect(await hardhatNFTMarketplace.getLengthMarketplace()).to.equal(1);
             
-            // verify the itemId of the item just added
+            // Verify the itemId of the item just added
             const listing0 = await hardhatNFTMarketplace.getListing(0);
             assert(listing0[1], 0);
 

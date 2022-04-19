@@ -2,12 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./NFT.sol";
 import "hardhat/console.sol";
+import "./NFT.sol";
 
 contract NFTMarketplace {
-    using Counters for Counters.Counter;
 
+    using Counters for Counters.Counter;
     Counters.Counter private _listingIds;
     NFT public nft;
 

@@ -16,6 +16,7 @@ describe("NFT", function () {
         const HardhatNFT = await ethers.getContractFactory("NFT");
         hardhatNFT = await HardhatNFT.deploy();
         await hardhatNFT.deployed();
+
     });
 
     describe("Mint", function () {
@@ -30,10 +31,10 @@ describe("NFT", function () {
 
             const itemId = resp.value;
             
-            // validate tokenId is correct
+            // Validate tokenId is correct
             expect(await hardhatNFT.getTokenId(itemId)).to.equal(TOKENID);
 
-            // validate one item was minted and added to Items
+            // Validate one item was minted and added to items
             expect(await hardhatNFT.getLengthItems()).to.equal(1);
 
         });
