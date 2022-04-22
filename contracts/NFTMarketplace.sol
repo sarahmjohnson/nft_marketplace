@@ -23,7 +23,7 @@ contract NFTMarketplace {
 
     Listing[] private marketplaceListings;
 
-    event itemListed(uint256 listingId, uint256 tokenId, uint256 salePrice, uint256 startTime, uint256 expirationTime, bool isSold);
+    event itemListed(uint256 listingId, uint256 tokenId, address seller, uint256 salePrice, uint256 startTime, uint256 expirationTime, bool isSold);
     event itemSold(uint256 listingId, address buyer, uint256 salePrice);
 
     constructor(NFT _nft) {
@@ -56,10 +56,9 @@ contract NFTMarketplace {
         uint256 _salePrice,
         uint256 _startTime,
         uint256 _expirationTime
-    // ) external virtual {
     ) hasTransferApproval(_tokenId) isItemOwner(_tokenId) external virtual {
         // Check item has transfer approval and that sender is the owner of the token
-        // TODO: add this back in when i figure out how to test openzepplin functions on nonexistant tokens
+        // TODO: these checks error in the test files, but work when testing in deployment
 
         uint256 newListingId = _listingIds.current();
         bool isSold = false;
@@ -68,7 +67,7 @@ contract NFTMarketplace {
         // List NFT on marketplace
         marketplaceListings.push(Listing(newListingId, _tokenId, seller, _salePrice, _startTime, _expirationTime, isSold));
     
-        emit itemListed(newListingId, _tokenId, _salePrice, _startTime, _expirationTime, isSold);
+        emit itemListed(newListingId, _tokenId, seller, _salePrice, _startTime, _expirationTime, isSold);
 
         _listingIds.increment();
 
@@ -87,20 +86,16 @@ contract NFTMarketplace {
     // Make an offer on a listing. Transfers ownership if approved for sale.
     function makeOffer(uint256 listingId) itemExists(listingId) isForSale(listingId) external payable {
         // Check item exists and is for sale
-        // TODO: check transfer approval
 
         // Check if funds match the listing price
         require(msg.value >= marketplaceListings[listingId].salePrice, "Offer rejected. Not enough funds sent.");
 
         uint256 tokenId = marketplaceListings[listingId].tokenId;
-        // console.log("TOKENID");
-        // console.log(tokenId);
+
         address payable seller = marketplaceListings[listingId].seller;
-        console.log("seller: ", seller);
 
         // Transfer token
         nft.safeTransferFrom(seller, msg.sender, tokenId);
-        console.log("safely transferred");
         seller.transfer(msg.value);
 
         // Set to sold

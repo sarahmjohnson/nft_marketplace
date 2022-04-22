@@ -71,7 +71,7 @@ describe("NFTMarketplace", function () {
                 EXPIRATIONTIME
             );
 
-            // get the listingId
+            // Get the listingId
             const listing0 = await hardhatNFTMarketplace.getListing(0);
             const listingId = listing0[0]
 

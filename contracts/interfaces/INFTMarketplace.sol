@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 interface INFTMarketplace {
   
   function addListing(
-    uint256 _itemId,
+    uint256 _tokenId,
     uint256 _salePrice,
     uint256 _startTime,
     uint256 _expirationTime
