@@ -3,8 +3,7 @@ const chai = require("chai");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-const TOKENID = 2390483209;
-const CONTRACTADDRESS = "0xb8b44b60085E9eB2BAefAc59E191a66D8294dD49";
+const TOKENURI = "https://easyupload.io/z0bw53";
 const ROYALTY = 10;
 const SALEPRICE = 20;
 const STARTTIME = 1649362949
@@ -16,7 +15,6 @@ describe("NFTMarketplace", function () {
     let hardhatNFT;
     let hardhatNFTMarketplace;
     let assert = chai.assert;
-    let itemId;
     let address1;
 
     async function deployContracts () {
@@ -31,13 +29,14 @@ describe("NFTMarketplace", function () {
 
         [address1] = await ethers.getSigners();
 
+        marketplaceAddress = await hardhatNFT.setMarketplace(hardhatNFTMarketplace.address);
+
         const resp = await hardhatNFT.mint(
-            TOKENID,
-            CONTRACTADDRESS,
+            TOKENURI,
             ROYALTY
         )
 
-        itemId = resp.value;
+        tokenId = resp.value;
 
     }
 
@@ -48,7 +47,7 @@ describe("NFTMarketplace", function () {
         it("Should add a listing to the marketplace", async function () {
         
             await hardhatNFTMarketplace.addListing(
-                itemId,
+                tokenId,
                 SALEPRICE,
                 STARTTIME,
                 EXPIRATIONTIME
@@ -57,16 +56,16 @@ describe("NFTMarketplace", function () {
             // Verify there is only one item in the marketplace
             expect(await hardhatNFTMarketplace.getLengthMarketplace()).to.equal(1);
             
-            // Verify the itemId of the item just added
+            // Verify the tokenId of the item just added
             const listing0 = await hardhatNFTMarketplace.getListing(0);
             assert(listing0[1], 0);
 
         });
 
         it("Should make an offer on a marketplace item", async function () {
-                    
+
             await hardhatNFTMarketplace.addListing(
-                itemId,
+                tokenId,
                 SALEPRICE,
                 STARTTIME,
                 EXPIRATIONTIME

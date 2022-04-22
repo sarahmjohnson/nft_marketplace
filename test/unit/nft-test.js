@@ -1,8 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-const TOKENID = 2390483209;
-const CONTRACTADDRESS = "0xb8b44b60085E9eB2BAefAc59E191a66D8294dD49";
+const TOKENURI = "https://easyupload.io/z0bw53";
 const ROYALTY = 10;
 
 describe("NFT", function () {
@@ -24,16 +23,13 @@ describe("NFT", function () {
         it("Should mint an NFT", async function () {
 
             const resp = await hardhatNFT.mint(
-                TOKENID,
-                CONTRACTADDRESS,
+                TOKENURI,
                 ROYALTY
             )
 
-            const itemId = resp.value;
+            const tokenID = resp.value;
+            console.log("tokenID: ", tokenID);
             
-            // Validate tokenId is correct
-            expect(await hardhatNFT.getTokenId(itemId)).to.equal(TOKENID);
-
             // Validate one item was minted and added to items
             expect(await hardhatNFT.getLengthItems()).to.equal(1);
 

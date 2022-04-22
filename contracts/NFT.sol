@@ -7,61 +7,53 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract NFT is ERC721{
 
     using Counters for Counters.Counter;
-    Counters.Counter private _itemIds;
+    Counters.Counter private _tokenIds;
+    address public marketplace;
     mapping(uint256=>bool) MintedNFTs;
 
     struct Item {
-        uint256 itemId; // ID for this item
-        uint256 tokenId; // NFT token ID
-        address contractAddress; // NFT address
-        address creator; // Address who is the original creator of the NFT
-        address payable owner; // Address who currently owns the NFT
-        uint256 royalty;
+        uint256 tokenId; // NFT ID
+        string tokenURI; // NFT URI
+        uint256 royalty; // TODO: royalty amount set in NFT.sol is not currently factored in
     }
 
     Item[] private items;
 
     constructor () ERC721("UnionNFT", "UNFT") {}
 
-    event itemCreated(uint256 itemId, uint256 tokenId, address contractAddress, address creator, address owner, uint256 royalty);
+    event itemCreated(uint256 tokenId, string tokenURI, uint256 royalty);
+
+    // Set marketplace equal to the address of the NFTMarketplace contract
+    function setMarketplace(address market) public returns (address) {
+        marketplace = market;
+        return marketplace;
+    }
 
     // Mint an NFT and add to items. Returns itemId
     function mint(
-        uint256 _tokenId,
-        address _contractAddress,
+        string memory _tokenURI,
         uint256 _royalty
     ) external virtual returns (uint256) {
 
-        require(!MintedNFTs[_tokenId],"This NFT is already minted and listed in the marketplace.");
+        _tokenIds.increment();
+        uint256 newTokenId = _tokenIds.current();
 
-        _itemIds.increment();
-        uint256 newItemId = _itemIds.current();
+        require(!MintedNFTs[newTokenId],"This NFT is already minted.");
 
-        _safeMint(msg.sender, newItemId);
-        // TODO: how do i get the deployed contract address here?
-        // approve(token.address, newItemId);
+        _safeMint(msg.sender, newTokenId);
 
-        address creator = msg.sender;
-        address payable owner = payable(msg.sender);
+        // Approve token for listing on marketplace
+        approve(marketplace, newTokenId);
 
         // Add NFT to items
-        items.push(Item(newItemId, _tokenId, _contractAddress, creator, owner, _royalty));
+        items.push(Item(newTokenId, _tokenURI, _royalty));
         
         // Add tokenId to previously MintedNFTs
-        MintedNFTs[_tokenId] = true;
+        MintedNFTs[newTokenId] = true;
         
-        emit itemCreated(newItemId, _tokenId, _contractAddress, creator, owner, _royalty);
+        emit itemCreated(newTokenId, _tokenURI, _royalty);
 
-        return newItemId;
-    }
-
-    // question: is this the best way to access variables from NFTMarketplace?
-    function getTokenId(uint256 itemId) external view returns (uint256) {
-        return items[itemId].tokenId;
-    }
-
-    function getOwner(uint256 itemId) public view returns (address payable) {
-        return items[itemId].owner;
+        return newTokenId;
     }
 
     function getLengthItems() public view returns (uint256) {
