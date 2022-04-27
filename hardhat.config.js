@@ -9,6 +9,10 @@ module.exports = {
     kovan: {
       url: secret.url,
       accounts: [secret.key]
-    }
+    },
+    rinkeby: {
+      url: secret.url1,
+      accounts: [secret.key1]
+    },
   }
 };
