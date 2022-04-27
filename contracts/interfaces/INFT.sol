@@ -8,5 +8,14 @@ interface INFT {
     string memory _tokenURI,
     uint256 _royalty
   ) external;
+
+  function approveForListing(
+    uint256 tokenId
+  ) external;
+
+  function setMarketplace(
+    uint256 tokenId,
+    address market
+  ) external;
   
 }

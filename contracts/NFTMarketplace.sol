@@ -58,7 +58,6 @@ contract NFTMarketplace {
         uint256 _expirationTime
     ) hasTransferApproval(_tokenId) isItemOwner(_tokenId) external virtual {
         // Check item has transfer approval and that sender is the owner of the token
-        // TODO: these checks error in the test files, but work when testing in deployment
 
         uint256 newListingId = _listingIds.current();
         bool isSold = false;
