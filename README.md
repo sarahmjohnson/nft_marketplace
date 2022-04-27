@@ -4,8 +4,6 @@ This project provides an NFT Listing Marketplace contract.
 
 It allows for minting NFTs and then listing them on the marketplace. Offers can then be made on the listings, and if the conditions are met, a sale with go through.
 
-Workflow:
-
 ```NFT```
 mint
  ```shell
@@ -16,7 +14,6 @@ mint(royalty)
 * emits tokenId
  ```
  
-setMarketplace
  ```shell
 // Set marketplace equal to the address of the NFTMarketplace contract
 
@@ -40,7 +37,6 @@ approveForListing(
 )
 ```
 
-```NFT Marketplace```
 addListing
  ```shell
 // Add a listing to the marketplace
@@ -71,7 +67,3 @@ makeOffer(
     {value: ethers.utils.parseEther(".0000001")}
 )
  ```
-
-```shell
-npx hardhat test
-```
