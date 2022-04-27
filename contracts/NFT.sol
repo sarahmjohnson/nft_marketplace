@@ -2,17 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
-contract NFT is ERC721{
+contract NFT is ERC721Royalty{
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     address public marketplace;
 
     struct Item {
-        uint256 royalty; // TODO: royalty amount set in NFT.sol is not currently factored in because openZep doesn't allow for changes to royalty
+        uint256 royalty;
     }
 
     constructor () ERC721("UnionNFT", "UNFT") {}
@@ -48,15 +49,16 @@ contract NFT is ERC721{
 
     }
 
-    // Mint an NFT and add to items. Returns itemId
+    // Mint an NFT and set royalty. Royalty represents percentage. e.g. royalty = 3 --> 3% royalty
     function mint(
-        uint256 _royalty
+        uint96 _royalty
     ) external {
 
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
 
         _safeMint(msg.sender, newTokenId);
+        _setTokenRoyalty(newTokenId, msg.sender, _royalty*100); // Multiply by 100 because the denominator is 1000
 
         emit NFTMinted(newTokenId, _royalty);
 

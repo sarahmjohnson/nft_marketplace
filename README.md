@@ -5,9 +5,9 @@ This project provides an NFT Listing Marketplace contract.
 It allows for minting NFTs and then listing them on the marketplace. Offers can then be made on the listings, and if the conditions are met, a sale with go through.
 
 ```NFT```
-mint
  ```shell
-royalty = 10
+ // Mint an NFT and set royalty as a percentage. e.g. royalty=3 --> 3% royalty
+royalty = 3
 
 mint(royalty)
 

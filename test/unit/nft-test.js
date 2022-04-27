@@ -1,11 +1,15 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-const ROYALTY = 10;
+const ROYALTY = 3;
+const SALEPRICE = ethers.utils.parseEther(".0000001");
+
 
 describe("NFT", function () {
     
     let hardhatNFT;
+    let royaltyAddress;
+    let royaltyAmount;
 
     beforeEach(async function () {
 
@@ -37,6 +41,11 @@ describe("NFT", function () {
 
             expect(await tokenId).to.equal(1);
 
+            royaltyAddress, royaltyArray = await hardhatNFT.royaltyInfo(tokenId, SALEPRICE);
+            expect(this.address).to.equal(royaltyAddress);
+            
+            royaltyToMatch = royaltyArray[1]/SALEPRICE;
+            expect(ROYALTY).to.equal(royaltyToMatch*100);
 
         });
     });
