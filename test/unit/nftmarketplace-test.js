@@ -5,7 +5,7 @@ const { ethers } = require("hardhat");
 
 const ROYALTY = 10;
 const SALEPRICE = ethers.utils.parseEther(".0000001");
-const STARTTIME = 1649362949
+const STARTTIME = 151081246
 const EXPIRATIONTIME = 1680898949
 
 
@@ -86,6 +86,10 @@ describe("NFTMarketplace", function () {
                 listingId,
                 {value: ethers.utils.parseEther(".0000001")}
             );
+
+            // Check isSold set to true
+            const listing = await hardhatNFTMarketplace.getListing(0);
+            assert(listing[6]);
 
         });
 

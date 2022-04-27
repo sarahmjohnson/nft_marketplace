@@ -12,10 +12,8 @@ contract NFT is ERC721{
     address public marketplace;
 
     struct Item {
-        uint256 royalty; // TODO: royalty amount set in NFT.sol is not currently factored in
+        uint256 royalty; // TODO: royalty amount set in NFT.sol is not currently factored in because openZep doesn't allow for changes to royalty
     }
-
-    mapping(uint256=>Item) MintedNFTs; // Mapping to keep track of NFTs t
 
     constructor () ERC721("UnionNFT", "UNFT") {}
 
@@ -30,7 +28,7 @@ contract NFT is ERC721{
     }
 
     // Set marketplace equal to the address of the NFTMarketplace contract
-    function setMarketplace(uint256 tokenId, address market) isItemOwner(tokenId) public returns (address) {// TODO: set onlyOwner
+    function setMarketplace(uint256 tokenId, address market) isItemOwner(tokenId) public {
         
         require(marketplace == address(0)); // already set
         
@@ -38,9 +36,9 @@ contract NFT is ERC721{
 
         emit MarketplaceSet(marketplace);
 
-        return marketplace;
     }
     
+    // Approve NFT for listing on the NFT Marketplace
     function approveForListing(uint256 tokenId) external {
 
         // Approve token for listing on marketplace
@@ -53,19 +51,15 @@ contract NFT is ERC721{
     // Mint an NFT and add to items. Returns itemId
     function mint(
         uint256 _royalty
-    ) external returns (uint256) {
+    ) external {
 
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
 
         _safeMint(msg.sender, newTokenId);
 
-        // Add tokenId to previously MintedNFTs
-        MintedNFTs[newTokenId] = Item(_royalty);
-        
         emit NFTMinted(newTokenId, _royalty);
 
-        return newTokenId;
     }
 
 }

@@ -73,17 +73,19 @@ describe("NFT", function () {
                 ROYALTY
             )
             const resp = await tx.wait();
-    
             tokenId = resp.events[resp.events.length - 1].args.tokenId;
 
-            const tx1 = await hardhatNFT.approveForListing(
+            await hardhatNFT.setMarketplace(
+                tokenId,
+                marketplaceAddress
+            )
+
+            await hardhatNFT.approveForListing(
                 tokenId
             )
 
-            const resp1 = await tx1.wait();
-            const tokenIdEmitted = await resp1.events[resp1.events.length - 1].args.tokenId;
-
-            expect(tokenId).to.equal(tokenIdEmitted);
+            approvals = await hardhatNFT.getApproved(tokenId);
+            expect(approvals).to.equal(marketplaceAddress);
 
         });
     });

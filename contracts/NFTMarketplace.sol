@@ -47,6 +47,8 @@ contract NFTMarketplace {
 
     modifier isForSale(uint256 listingId){
         require(!marketplaceListings[listingId].isSold, "NFT is already sold.");
+        require(marketplaceListings[listingId].startTime <= block.timestamp, "NFT not available to buy yet.");
+        require(marketplaceListings[listingId].expirationTime > block.timestamp, "NFT listing expired.");
         _;
     }
 
