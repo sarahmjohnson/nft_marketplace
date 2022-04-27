@@ -5,10 +5,13 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Token = await ethers.getContractFactory("NFTMarketplace");
-  const token = await Token.deploy();
+  const Token0 = await ethers.getContractFactory("NFT");
+  const token0 = await Token0.deploy();
 
-  console.log("Token address:", token.address);
+  const Token1 = await ethers.getContractFactory("NFTMarketplace");
+  const token1 = await Token1.deploy(token0.address);
+
+  console.log("Token address:", token1.address);
 }
 
 main()

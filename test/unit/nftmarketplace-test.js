@@ -3,9 +3,8 @@ const chai = require("chai");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-const TOKENURI = "https://easyupload.io/z0bw53";
 const ROYALTY = 10;
-const SALEPRICE = 20;
+const SALEPRICE = ethers.utils.parseEther(".0001");
 const STARTTIME = 1649362949
 const EXPIRATIONTIME = 1680898949
 
@@ -16,6 +15,7 @@ describe("NFTMarketplace", function () {
     let hardhatNFTMarketplace;
     let assert = chai.assert;
     let address1;
+    let tokenId;
 
     async function deployContracts () {
 
@@ -29,14 +29,21 @@ describe("NFTMarketplace", function () {
 
         [address1] = await ethers.getSigners();
 
-        marketplaceAddress = await hardhatNFT.setMarketplace(hardhatNFTMarketplace.address);
-
-        const resp = await hardhatNFT.mint(
-            TOKENURI,
+        const tx = await hardhatNFT.mint(
             ROYALTY
         )
+        const resp = await tx.wait();
 
-        tokenId = resp.value;
+        tokenId = resp.events[resp.events.length - 1].args.tokenId;
+
+        await hardhatNFT.setMarketplace(
+            tokenId,
+            hardhatNFTMarketplace.address
+        )
+
+        await hardhatNFT.approveForListing(
+            tokenId
+        )
 
     }
 
@@ -77,7 +84,7 @@ describe("NFTMarketplace", function () {
 
             await hardhatNFTMarketplace.makeOffer(
                 listingId,
-                {value: ethers.utils.parseEther("1")}
+                {value: ethers.utils.parseEther(".0001")}
             );
 
         });

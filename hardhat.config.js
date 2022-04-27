@@ -1,5 +1,6 @@
 require("@nomiclabs/hardhat-waffle");
 require('@openzeppelin/hardhat-upgrades');
+// require("@nomiclabs/hardhat-truffle5");
 let secret = require("./secret.json");
 
 module.exports = {
